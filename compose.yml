@@ -3,9 +3,3 @@ services:
     build: ./
     ports:
       - "3000:4200"
-
-  # db:
-  #   image: postgres
-  #   restart: always
-  #   environment:
-  #     - POSTGRES_PASSWORD=postgres
