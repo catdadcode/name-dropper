@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
   }
 
   formatMessage(text: string): string {
-    const mentionRegex = /@([\w\s]+)#(\d+)/g;
+    const mentionRegex = /@(\w+)#(\d+)/g;
     return text.replace(mentionRegex, (match, username, id) => {
       return `<span class="font-bold text-blue-300">@${username}</span>`;
     });

@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm ci && npm run build
+RUN npm install && npm run build
 
 ENV NODE_ENV=production
 

@@ -92,7 +92,6 @@ export class MentionerComponent {
   }
 
   submitComment(): void {
-    console.log('Submit Comment:', this.message);
     const mentionRegex = /@(\w+)#(\d+)/g;
     let match;
     const mentions: number[] = [];
