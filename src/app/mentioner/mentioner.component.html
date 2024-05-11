@@ -1,0 +1,10 @@
+<!-- mentioner.component.html -->
+<div class="bg-gray-800 p-4 border-2 border-pink-500">
+  <textarea
+    #mentioner
+    class="w-full p-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none overflow-hidden"
+    placeholder="Type your message here..."
+    rows="1"
+    (keyup)="autoGrow()"
+  ></textarea>
+</div>
