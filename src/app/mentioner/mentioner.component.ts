@@ -53,14 +53,15 @@ export class MentionerComponent {
         this.submitComment();
         event.preventDefault();
       }
-    } else if (
-      event.key === 'ArrowDown' &&
-      this.selectedUserIndex < this.filteredUsers.length - 1
-    ) {
-      this.selectedUserIndex++;
+    } else if (event.key === 'ArrowDown') {
+      if (this.selectedUserIndex < this.filteredUsers.length - 1) {
+        this.selectedUserIndex++;
+      }
       event.preventDefault();
-    } else if (event.key === 'ArrowUp' && this.selectedUserIndex > 0) {
-      this.selectedUserIndex--;
+    } else if (event.key === 'ArrowUp') {
+      if (this.selectedUserIndex > 0) {
+        this.selectedUserIndex--;
+      }
       event.preventDefault();
     }
   }
