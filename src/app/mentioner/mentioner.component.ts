@@ -63,6 +63,10 @@ export class MentionerComponent {
         this.selectedUserIndex--;
       }
       event.preventDefault();
+    } else if (event.key === 'Escape' && this.isMentionActive) {
+      this.isMentionActive = false;
+      event.preventDefault();
+      event.stopPropagation();
     }
   }
 
