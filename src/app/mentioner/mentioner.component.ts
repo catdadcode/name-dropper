@@ -28,6 +28,7 @@ export class MentionerComponent {
   isMentionActive: boolean = false;
   filteredUsers: User[] = [];
   selectedUserIndex: number = 0;
+  escaped: boolean = false;
 
   autoGrow(): void {
     const textArea = this.mentioner.nativeElement;
@@ -64,6 +65,7 @@ export class MentionerComponent {
       }
       event.preventDefault();
     } else if (event.key === 'Escape' && this.isMentionActive) {
+      this.escaped = true;
       this.isMentionActive = false;
       event.preventDefault();
       event.stopPropagation();
@@ -71,6 +73,10 @@ export class MentionerComponent {
   }
 
   checkForAtSign(): void {
+    if (this.escaped) {
+      this.escaped = false;
+      return;
+    }
     const cursorPosition = this.mentioner.nativeElement.selectionStart;
     const textUpToCursor = this.message.substring(0, cursorPosition);
     const lastAtPos = textUpToCursor.lastIndexOf('@');
