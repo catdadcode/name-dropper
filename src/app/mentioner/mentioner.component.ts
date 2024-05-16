@@ -128,6 +128,15 @@ export class MentionerComponent {
     this.message = `${firstMessagePart}${mention}${restOfMessage}`;
     this.isMentionActive = false;
     this.selectedUserIndex = 0;
+
+    // Place cursor after the mention
+    const finalCursorPosition = firstMessagePart.length + mention.length;
+    setTimeout(() => {
+      this.mentioner.nativeElement.setSelectionRange(
+        finalCursorPosition,
+        finalCursorPosition,
+      );
+    }, 0);
   }
 
   submitComment(): void {
