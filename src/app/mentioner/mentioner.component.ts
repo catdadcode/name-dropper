@@ -83,7 +83,8 @@ export class MentionerComponent {
 
     if (
       lastAtPos !== -1 &&
-      textUpToCursor.substring(lastAtPos).indexOf(' ') === -1
+      textUpToCursor.substring(lastAtPos).indexOf(' ') === -1 &&
+      this.filteredUsers.length > 0
     ) {
       this.isMentionActive = true;
       const filterText = textUpToCursor.substring(lastAtPos + 1);
@@ -96,8 +97,13 @@ export class MentionerComponent {
   }
 
   selectUser(user: User): void {
-    const atIndex = this.message.lastIndexOf('@');
-    this.message = `${this.message.substring(0, atIndex)}@${user.name}#${user.id} `;
+    const originalMessage = this.message;
+    const atIndex = originalMessage.lastIndexOf('@');
+    const spaceIndex = originalMessage.substring(atIndex).indexOf(' ');
+    const firstMessagePart = originalMessage.substring(0, atIndex);
+    const mention = `@${user.name}#${user.id}`;
+    const restOfMessage = originalMessage.substring(atIndex + spaceIndex + 1);
+    this.message = `${firstMessagePart}${mention} ${restOfMessage}`;
     this.mentioner.nativeElement.focus();
     this.isMentionActive = false;
   }
