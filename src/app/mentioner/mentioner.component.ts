@@ -38,38 +38,53 @@ export class MentionerComponent {
 
   handleKeyDown(event: KeyboardEvent): void | false {
     if (event.key === '@') {
-      this.isMentionActive = true;
-      this.filteredUsers = this.users;
+      this.activateMention();
     } else if (event.key === 'Enter') {
       if (event.shiftKey) {
         return;
       } else if (this.isMentionActive) {
-        if (this.filteredUsers.length && this.selectedUserIndex >= 0) {
-          this.selectUser(this.filteredUsers[this.selectedUserIndex]);
-          event.preventDefault();
-          event.stopPropagation();
-          this.isMentionActive = false;
-        }
+        this.handleMentionSelection(event);
       } else {
         this.submitComment();
         event.preventDefault();
       }
-    } else if (event.key === 'ArrowDown') {
-      if (this.selectedUserIndex < this.filteredUsers.length - 1) {
-        this.selectedUserIndex++;
-      }
+    } else if (event.key === 'ArrowDown' && this.isMentionActive) {
+      this.navigateMentionList(1);
       event.preventDefault();
-    } else if (event.key === 'ArrowUp') {
-      if (this.selectedUserIndex > 0) {
-        this.selectedUserIndex--;
-      }
+    } else if (event.key === 'ArrowUp' && this.isMentionActive) {
+      this.navigateMentionList(-1);
       event.preventDefault();
     } else if (event.key === 'Escape' && this.isMentionActive) {
-      this.escaped = true;
-      this.isMentionActive = false;
+      this.deactivateMention();
       event.preventDefault();
       event.stopPropagation();
     }
+  }
+
+  activateMention(): void {
+    this.isMentionActive = true;
+    this.filteredUsers = this.users;
+  }
+
+  handleMentionSelection(event: KeyboardEvent): void {
+    if (this.filteredUsers.length && this.selectedUserIndex >= 0) {
+      this.selectUser(this.filteredUsers[this.selectedUserIndex]);
+      event.preventDefault();
+      event.stopPropagation();
+      this.isMentionActive = false;
+    }
+  }
+
+  navigateMentionList(direction: number): void {
+    const newIndex = this.selectedUserIndex + direction;
+    if (newIndex >= 0 && newIndex < this.filteredUsers.length) {
+      this.selectedUserIndex = newIndex;
+    }
+  }
+
+  deactivateMention(): void {
+    this.escaped = true;
+    this.isMentionActive = false;
   }
 
   checkForAtSign(): void {
@@ -77,16 +92,16 @@ export class MentionerComponent {
       this.escaped = false;
       return;
     }
+
     const cursorPosition = this.mentioner.nativeElement.selectionStart;
     const textUpToCursor = this.message.substring(0, cursorPosition);
     const lastAtPos = textUpToCursor.lastIndexOf('@');
 
     if (
       lastAtPos !== -1 &&
-      textUpToCursor.substring(lastAtPos).indexOf(' ') === -1 &&
-      this.filteredUsers.length > 0
+      this.isValidMentionContext(lastAtPos, cursorPosition)
     ) {
-      this.isMentionActive = true;
+      this.activateMention();
       const filterText = textUpToCursor.substring(lastAtPos + 1);
       this.filteredUsers = this.users.filter((user) =>
         user.name.toLowerCase().includes(filterText.toLowerCase()),
@@ -96,16 +111,24 @@ export class MentionerComponent {
     }
   }
 
+  isValidMentionContext(atIndex: number, cursorPosition: number): boolean {
+    const textAfterAt = this.message.substring(atIndex, cursorPosition);
+    return textAfterAt.indexOf(' ') === -1 && textAfterAt.indexOf('\n') === -1;
+  }
+
   selectUser(user: User): void {
-    const originalMessage = this.message;
-    const atIndex = originalMessage.lastIndexOf('@');
-    const spaceIndex = originalMessage.substring(atIndex).indexOf(' ');
-    const firstMessagePart = originalMessage.substring(0, atIndex);
+    const cursorPosition = this.mentioner.nativeElement.selectionStart;
+    const textUpToCursor = this.message.substring(0, cursorPosition);
+    const lastAtPos = textUpToCursor.lastIndexOf('@');
+
+    const firstMessagePart = this.message.substring(0, lastAtPos);
     const mention = `@${user.name}#${user.id}`;
-    const restOfMessage = originalMessage.substring(atIndex + spaceIndex + 1);
-    this.message = `${firstMessagePart}${mention} ${restOfMessage}`;
+    const restOfMessage = this.message.substring(cursorPosition);
+
+    this.message = `${firstMessagePart}${mention}${restOfMessage}`;
     this.mentioner.nativeElement.focus();
     this.isMentionActive = false;
+    this.selectedUserIndex = 0;
   }
 
   submitComment(): void {
@@ -114,7 +137,7 @@ export class MentionerComponent {
     const mentions: number[] = [];
 
     while ((match = mentionRegex.exec(this.message)) !== null) {
-      mentions.push(parseInt(match[2]));
+      mentions.push(parseInt(match[2], 10));
     }
 
     for (const mention of mentions) {
@@ -126,10 +149,11 @@ export class MentionerComponent {
     }
 
     this.messageSubmit.emit({
-      userId: currentUserId,
+      userId: 1, // Replace with the actual user ID
       text: this.message,
       mentions,
     });
+
     this.message = '';
   }
 }
