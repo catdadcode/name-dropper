@@ -42,7 +42,7 @@ export class MentionerComponent {
     } else if (event.key === 'Enter') {
       if (event.shiftKey) {
         return;
-      } else if (this.isMentionActive) {
+      } else if (this.isMentionActive && this.filteredUsers.length > 0) {
         this.handleMentionSelection(event);
       } else {
         this.submitComment();
@@ -126,7 +126,6 @@ export class MentionerComponent {
     const restOfMessage = this.message.substring(cursorPosition);
 
     this.message = `${firstMessagePart}${mention}${restOfMessage}`;
-    this.mentioner.nativeElement.focus();
     this.isMentionActive = false;
     this.selectedUserIndex = 0;
   }
